@@ -6,21 +6,27 @@ import { MOUFormData } from './validation'
 import { formatFee, terbilangCapital } from './terbilang'
 
 export function generateDocx(data: MOUFormData): Buffer {
-  const content = readFileSync(join(process.cwd(), 'public', 'templates', 'template.docx'))
+  const templateFile = data.paymentType === 'pribadi'
+    ? 'template-pribadi.docx'
+    : 'template-nonpkp.docx'
+
+  const content = readFileSync(join(process.cwd(), 'public', 'templates', templateFile))
   const doc = new Docxtemplater(new PizZip(content), { paragraphLoop: true, linebreaks: true })
 
-  const paymentText = data.paymentTiming === 'after' 
+  const paymentText = data.paymentTiming === 'after'
     ? '100% (seratus persen) sesudah seluruh Kerja Sama diselesaikan'
     : '100% (seratus persen) sebelum seluruh Kerja Sama diselesaikan'
 
-  // For now, signature image is just a placeholder text
-  // To embed actual images, you'd need to use docxtemplater's ImageModule
   const signatureText = data.signatureImage ? '[Gambar Tanda Tangan]' : ''
+
+  const kolName = data.paymentType === 'pribadi'
+    ? data.kolName
+    : data.companyName || data.kolName
 
   doc.render({
     MOU_NUMBER:      data.mouNumber,
     DATE:            data.date,
-    KOL_NAME:        data.kolName,
+    KOL_NAME:        kolName,
     KTP:             data.ktp || '-',
     NPWP:            data.npwp || '-',
     ADDRESS:         data.address,

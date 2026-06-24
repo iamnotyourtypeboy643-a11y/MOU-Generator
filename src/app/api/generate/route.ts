@@ -17,11 +17,14 @@ export async function POST(req: NextRequest) {
 
     const data = parsed.data
     const docxBuffer = generateDocx(data)
-    
-    const safeName = sanitizeFilename(data.kolName)
+
+    const displayName = data.paymentType === 'pribadi'
+      ? data.kolName
+      : data.companyName || data.kolName
+    const safeName = sanitizeFilename(displayName)
     const filename = `MOU_${safeName}_${data.mouNumber.replace(/\//g, '-')}.docx`
 
-    return new NextResponse(docxBuffer, {
+    return new NextResponse(new Uint8Array(docxBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

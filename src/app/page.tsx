@@ -122,7 +122,20 @@ export default function Home() {
 
       <main style={s.main}>
         <h1 style={{ fontSize: 19, fontWeight: 700, marginBottom: 4 }}>Buat MOU KOL</h1>
-        <p style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Isi form → klik Download. Field <b style={{ color: '#DC2626' }}>*</b> wajib diisi.</p>
+        <p style={{ fontSize: 13, color: '#64748B', marginBottom: 20 }}>Pilih tipe pembayaran → isi form → klik Download. Field <b style={{ color: '#DC2626' }}>*</b> wajib diisi.</p>
+
+        <Card title="Tipe Pembayaran">
+          <div style={{ display: 'flex', gap: 16 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input type="radio" {...register('paymentType')} value="pribadi" style={{ cursor: 'pointer' }} />
+              <span style={{ fontSize: 14 }}>Pribadi (Individual KOL)</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input type="radio" {...register('paymentType')} value="nonpkp" style={{ cursor: 'pointer' }} />
+              <span style={{ fontSize: 14 }}>Non-PKP (CV / Badan Usaha)</span>
+            </label>
+          </div>
+        </Card>
 
         <Card title="Informasi MOU">
           <div style={s.row2}>
@@ -135,21 +148,40 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card title="Informasi Talent">
-          <Field label="Nama Lengkap" req err={errors.kolName?.message}>
-            <input {...register('kolName')} style={inp(errors.kolName?.message)} placeholder="Nama sesuai KTP" />
-          </Field>
-          <div style={s.row2}>
-            <Field label="Nomor KTP">
-              <input {...register('ktp')} style={inp()} placeholder="3276022712010004" />
-            </Field>
-            <Field label="NPWP">
-              <input {...register('npwp')} style={inp()} placeholder="12.345.678.9-012.000" />
-            </Field>
-          </div>
-          <Field label="Alamat (sesuai KTP)" req err={errors.address?.message}>
-            <textarea {...register('address')} style={{ ...inp(errors.address?.message), minHeight: 68, resize: 'vertical' }} placeholder="Jl. Contoh No. 1, RT 003/010, Kel. Nama, Kec. Nama, Kota" />
-          </Field>
+        <Card title={watch('paymentType') === 'pribadi' ? 'Informasi Talent' : 'Informasi Perusahaan'}>
+          {watch('paymentType') === 'pribadi' ? (
+            <>
+              <Field label="Nama Lengkap" req err={errors.kolName?.message}>
+                <input {...register('kolName')} style={inp(errors.kolName?.message)} placeholder="Nama sesuai KTP" />
+              </Field>
+              <div style={s.row2}>
+                <Field label="Nomor KTP">
+                  <input {...register('ktp')} style={inp()} placeholder="3276022712010004" />
+                </Field>
+                <Field label="NPWP">
+                  <input {...register('npwp')} style={inp()} placeholder="12.345.678.9-012.000" />
+                </Field>
+              </div>
+              <Field label="Alamat (sesuai KTP)" req err={errors.address?.message}>
+                <textarea {...register('address')} style={{ ...inp(errors.address?.message), minHeight: 68, resize: 'vertical' }} placeholder="Jl. Contoh No. 1, RT 003/010, Kel. Nama, Kec. Nama, Kota" />
+              </Field>
+            </>
+          ) : (
+            <>
+              <Field label="Nama Perusahaan / CV" req err={errors.companyName?.message}>
+                <input {...register('companyName')} style={inp(errors.companyName?.message)} placeholder="CV Maju Bersama Buzzlink" />
+              </Field>
+              <Field label="Nama Direktur Utama" req err={errors.companyDirector?.message}>
+                <input {...register('companyDirector')} style={inp(errors.companyDirector?.message)} placeholder="Hasyim Rizki" />
+              </Field>
+              <Field label="NPWP Perusahaan" req err={errors.npwp?.message}>
+                <input {...register('npwp')} style={inp(errors.npwp?.message)} placeholder="12.345.678.9-012.000" />
+              </Field>
+              <Field label="Alamat Kantor" req err={errors.address?.message}>
+                <textarea {...register('address')} style={{ ...inp(errors.address?.message), minHeight: 68, resize: 'vertical' }} placeholder="Jl. Kantor No. 1, Kota, Provinsi" />
+              </Field>
+            </>
+          )}
           <div style={s.row2}>
             <Field label="Nomor HP">
               <input {...register('phone')} style={inp()} placeholder="081234567890" />
